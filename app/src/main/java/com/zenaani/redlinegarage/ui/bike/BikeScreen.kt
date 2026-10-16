@@ -1,0 +1,291 @@
+package com.zenaani.redlinegarage.ui.bike
+
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.VerticalDivider
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.zenaani.redlinegarage.R
+import com.zenaani.redlinegarage.core.components.performance.AccelerationCard
+import com.zenaani.redlinegarage.core.components.performance.AccelerationRun
+import com.zenaani.redlinegarage.core.components.BikeDetailTab
+import com.zenaani.redlinegarage.core.components.performance.ChartPoint
+import com.zenaani.redlinegarage.core.components.performance.ChartSeries
+import com.zenaani.redlinegarage.core.components.performance.PerfColors
+import com.zenaani.redlinegarage.core.components.performance.PowerTorqueCard
+import com.zenaani.redlinegarage.core.components.performance.pts
+import com.zenaani.redlinegarage.ui.theme.BodoniModa
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun BikeScreen(viewModel: BikeViewModel = hiltViewModel()) {
+    Scaffold(
+        topBar = {
+//            TopAppBar(
+//                title = {
+//                    Text("Details")
+//                },
+//                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.primary)
+//            )
+        },
+    ) { innerPadding ->
+
+        val uiState = viewModel.uiState.collectAsState().value
+
+        Box(
+            modifier = Modifier
+                .padding(innerPadding)
+                .fillMaxSize(), contentAlignment = Alignment.Center
+        ) {
+
+            when (uiState) {
+                is BikeUiState.Loading -> {
+                    CircularProgressIndicator()
+                }
+
+                is BikeUiState.Success -> {
+                    val data = uiState.data
+                    val engineData = data.engine
+                    val performanceData = data.performance
+
+                    Column(
+                        modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
+                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                    ) {
+
+                        Box() {
+                            Image(painter = painterResource(R.drawable.honda_cb300r), contentDescription = null, modifier = Modifier.offset(x = 40.dp))
+
+                            // Gradient Overlay (left -> right)
+                            Box(
+                                modifier = Modifier
+                                    .matchParentSize()
+                                    .background(
+                                        Brush.horizontalGradient(
+                                            colors = listOf(
+                                                Color.Black,
+                                                Color.Transparent
+                                            )
+                                        )
+                                    )
+                            )
+
+                            // Gradient Overlay (bottom -> top)
+                            Box(
+                                modifier = Modifier
+                                    .align(Alignment.BottomCenter)
+                                    .fillMaxWidth()
+                                    .height(50.dp)
+                                    .background(
+                                        Brush.verticalGradient(
+                                            colors = listOf(
+                                                Color.Transparent,
+                                                Color.Black
+                                            )
+                                        )
+                                    )
+                            )
+
+                            // Bike Intro
+                            Column(
+                                modifier = Modifier.padding(start = 8.dp, top = 16.dp)
+                            ) {
+                                Text("The Ride", fontSize = 8.sp, color = Color.White, fontWeight = FontWeight.ExtraLight, letterSpacing = 3.sp)
+                                Text(data.brandName, fontSize = 34.sp, color = Color.White, fontFamily = BodoniModa, fontWeight = FontWeight.Bold)
+                                Text(data.modelName, fontSize = 34.sp, lineHeight = 2.sp, color = Color.White, fontFamily = BodoniModa, fontWeight = FontWeight.Bold)
+                                Text("Neo Sports Cafe", fontSize = 8.sp, color = Color.White, fontWeight = FontWeight.ExtraLight, letterSpacing = 3.sp)
+                                Spacer(modifier = Modifier.size(8.dp))
+                                Text("Minimal Lines", fontSize = 8.sp, color = Color.White, fontWeight = FontWeight.ExtraLight, letterSpacing = 1.sp)
+                                Spacer(modifier = Modifier.size(4.dp))
+                                Text("Maximum Thrills.", fontSize = 8.sp, color = Color.White, fontWeight = FontWeight.ExtraLight, letterSpacing = 1.sp)
+                            }
+                        }
+
+                        // Switchable Tab
+                        var selectedTab by remember { mutableStateOf("Performance") }
+                        BikeDetailTab(selectedTab = selectedTab, onTabSelected = { selectedTab = it })
+
+
+                        // Key Figures
+                        Column(
+                            modifier = Modifier.padding(start = 8.dp, end = 8.dp)
+                        ) {
+                            Spacer(modifier = Modifier.height(18.dp))
+                            Text("KEY FIGURES", fontSize = 10.sp, color = Color.White, fontWeight = FontWeight.ExtraLight, letterSpacing = 3.sp)
+                            Spacer(modifier = Modifier.height(12.dp))
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                KeyFigureItem("Max Power", engineData.maxPowerBhp.toString(), "hp", )
+                                VerticalDivider(modifier = Modifier.height(60.dp))
+                                KeyFigureItem("Max Torque", engineData.maxTorqueNm.toString(), "Nm", )
+                                VerticalDivider(modifier = Modifier.height(60.dp))
+                                KeyFigureItem("0-60 km/h", performanceData.zeroToSixtyAvg.toString(), "s", )
+                                VerticalDivider(modifier = Modifier.height(60.dp))
+                                KeyFigureItem("Top Speed", performanceData.topSpeedTestedKmh.toString(), "Km/h", )
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(8.dp))
+                        AccelerationCard(
+                            runs = listOf(
+                                AccelerationRun("0 – 60 km/h", 2.94f),
+                                AccelerationRun("0 – 100 km/h", 7.35f),
+                                AccelerationRun("0 – 140 km/h", 0f), // No verified figure
+                            ),
+                        )
+
+                        val power = ChartSeries(
+                            label = "Power (hp)",
+                            color = PerfColors.Power,
+                            points = pts(
+                                1800f to 0.5f, 2000f to 0.8f, 3000f to 4.3f, 4000f to 9.3f, 5000f to 14.5f,
+                                6000f to 19.8f, 7000f to 25.0f, 8000f to 28.8f, 9000f to 31.1f,
+                                9600f to 30.4f, 10200f to 28.5f,
+                            ),
+                        )
+                        val torque = ChartSeries(
+                            label = "Torque (Nm)",
+                            color = PerfColors.Torque,
+                            points = pts(
+                                1800f to 2.5f, 2500f to 5.8f, 3000f to 9.0f, 4000f to 16.2f, 5000f to 20.8f,
+                                6000f to 22.5f, 6500f to 22.8f, 7000f to 22.6f, 8000f to 21.2f,
+                                9000f to 18.8f, 10000f to 16.0f, 10200f to 15.2f,
+                            ),
+                        )
+
+                        PowerTorqueCard(
+                            power = power,
+                            torque = torque,
+                            peakPower = ChartPoint(9000f, 31.1f),
+                            peakTorque = ChartPoint(7750f, 27.5f),
+                        )
+
+                        Spacer(modifier = Modifier.height(12.dp))
+
+
+
+//                        // Bike Info
+//                        Card(modifier = Modifier.fillMaxWidth()) {
+//                            Column(
+//                                modifier = Modifier.padding(16.dp),
+//                                verticalArrangement = Arrangement.spacedBy(6.dp)
+//                            ) {
+//
+//                                Text(
+//                                    text = "${data.brandName} ${data.modelName}",
+//                                    style = MaterialTheme.typography.titleLarge
+//                                )
+//
+//                                Text("Variant : ${data.variant}")
+//                                Text("Segment : ${data.segment}")
+//                                Text("Launch Year : ${data.launchYear}")
+//                            }
+//                        }
+//
+//                        // Engine Info
+//                        Card(modifier = Modifier.fillMaxWidth()) {
+//                            Column(
+//                                modifier = Modifier.padding(16.dp),
+//                                verticalArrangement = Arrangement.spacedBy(6.dp)
+//                            ) {
+//
+//                                Text(
+//                                    text = "Engine",
+//                                    style = MaterialTheme.typography.titleMedium
+//                                )
+//
+//                                Text("Engine CC : ${engineData.engineCc} cc")
+//                                Text("Engine Type : ${engineData.engineType}")
+//                                Text("Max Power : ${engineData.maxPowerBhp} bhp")
+//                                Text("Power RPM : ${engineData.powerRpm} rpm")
+//                                Text("Max Torque : ${engineData.maxTorqueNm} Nm")
+//                                Text("Torque RPM : ${engineData.torqueRpm} rpm")
+//                                Text("Transmission : ${engineData.transmission}")
+//                                Text("Kerb Weight : ${engineData.kerbWeightKg} kg")
+//                            }
+//                        }
+//
+//                        // Performance Info
+//                        Card(modifier = Modifier.fillMaxWidth()) {
+//                            Column(
+//                                modifier = Modifier.padding(16.dp),
+//                                verticalArrangement = Arrangement.spacedBy(6.dp)
+//                            ) {
+//
+//                                Text(
+//                                    text = "Performance",
+//                                    style = MaterialTheme.typography.titleMedium
+//                                )
+//
+//                                Text("0-60 Best : ${performanceData.zeroToSixtyBest} sec")
+//                                Text("0-60 Avg : ${performanceData.zeroToSixtyAvg} sec")
+//
+//                                Text("0-100 Best : ${performanceData.zeroToHundredBest} sec")
+//                                Text("0-100 Avg : ${performanceData.zeroToHundredAvg} sec")
+//
+//                                Text("Top Speed : ${performanceData.topSpeedTestedKmh} km/h")
+//
+//                                Text("Quarter Mile Best : ${performanceData.quarterMileBest} sec")
+//                                Text("Quarter Mile Avg : ${performanceData.quarterMileAvg} sec")
+//                            }
+//                        }
+                    }
+
+                }
+
+                is BikeUiState.Error -> {
+                    Text(uiState.message)
+                }
+            }
+
+        }
+
+
+    }
+}
+
+@Composable
+fun KeyFigureItem(title: String, value: String, unit: String) {
+    Column() {
+        Row(
+            verticalAlignment = Alignment.Bottom,
+             horizontalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            Text(value, fontSize = 22.sp, color = Color.White, fontFamily = BodoniModa, fontWeight = FontWeight.Bold)
+            Text(unit, fontSize = 16.sp, color = Color.White, fontFamily = BodoniModa, fontWeight = FontWeight.Bold)
+        }
+        Text(title, fontSize = 10.sp, color = Color.Gray, fontWeight = FontWeight.ExtraLight)
+    }
+}
