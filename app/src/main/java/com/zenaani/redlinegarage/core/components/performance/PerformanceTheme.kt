@@ -3,14 +3,17 @@ package com.zenaani.redlinegarage.core.components.performance
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
@@ -44,14 +47,16 @@ object PerfType {
 
     val SectionLabel = TextStyle(
         color = PerfColors.TextLabel,
-        fontSize = 12.sp,
+        fontSize = 10.sp,
         fontWeight = FontWeight.Medium,
-        letterSpacing = 2.5.sp,
     )
     val StatLabel = SectionLabel.copy(fontSize = 11.sp, letterSpacing = 2.sp)
 
-    val RowLabel = TextStyle(color = PerfColors.TextSecondary, fontSize = 15.sp)
-    val RowValue = TextStyle(color = PerfColors.TextPrimary, fontFamily = ValueFont, fontSize = 22.sp)
+    /** Larger title used when the card header carries an icon. */
+    val CardTitleLarge = SectionLabel.copy(fontSize = 16.sp, fontWeight = FontWeight.Normal, letterSpacing = 2.sp)
+
+    val RowLabel = TextStyle(color = PerfColors.TextSecondary, fontSize = 10.sp)
+    val RowValue = TextStyle(color = PerfColors.TextPrimary, fontFamily = ValueFont, fontSize = 14.sp)
     val RowUnit = TextStyle(color = PerfColors.TextPrimary, fontFamily = ValueFont, fontSize = 15.sp)
 
     val GaugeValue = TextStyle(color = PerfColors.TextPrimary, fontFamily = ValueFont, fontSize = 40.sp)
@@ -64,11 +69,16 @@ object PerfType {
     val AxisLabel = TextStyle(color = PerfColors.TextSecondary, fontSize = 11.sp)
 }
 
-/** Rounded dark card with an uppercase, letter-spaced title. */
+/**
+ * Rounded dark card with an uppercase, letter-spaced title.
+ * Pass [icon] (e.g. [IconBadge]) to show a leading icon in the header.
+ */
 @Composable
 fun PerformanceCard(
     title: String,
     modifier: Modifier = Modifier,
+    icon: (@Composable () -> Unit)? = null,
+    titleStyle: TextStyle = PerfType.SectionLabel,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     Surface(
@@ -78,8 +88,14 @@ fun PerformanceCard(
         border = BorderStroke(1.dp, PerfColors.CardBorder),
     ) {
         Column(Modifier.padding(20.dp)) {
-            Text(text = title.uppercase(), style = PerfType.SectionLabel)
-            Spacer(Modifier.height(20.dp))
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                if (icon != null) {
+                    icon()
+                    Spacer(Modifier.width(14.dp))
+                }
+                Text(text = title.uppercase(), style = titleStyle)
+            }
+            Spacer(Modifier.height(8.dp))
             content()
         }
     }

@@ -49,8 +49,11 @@ import com.zenaani.redlinegarage.R
 import com.zenaani.redlinegarage.core.components.performance.AccelerationCard
 import com.zenaani.redlinegarage.core.components.performance.AccelerationRun
 import com.zenaani.redlinegarage.core.components.BikeDetailTab
+import com.zenaani.redlinegarage.core.components.DimensionsIcon
 import com.zenaani.redlinegarage.core.components.EngineItemData
 import com.zenaani.redlinegarage.core.components.EngineSpecsGrid
+import com.zenaani.redlinegarage.core.components.SpecCard
+import com.zenaani.redlinegarage.core.components.SpecItem
 import com.zenaani.redlinegarage.core.components.performance.ChartPoint
 import com.zenaani.redlinegarage.core.components.performance.ChartSeries
 import com.zenaani.redlinegarage.core.components.performance.PerfColors
@@ -325,6 +328,54 @@ fun BikeScreen(viewModel: BikeViewModel = hiltViewModel()) {
                                     )
                                     EngineSpecsGrid(engineItems)
                                 }
+                            }
+
+                            "SPECS" -> {
+                                SpecCard(
+                                    title = "Dimensions & Weight",
+                                    icon = DimensionsIcon,
+                                    items = listOf(
+                                        SpecItem("Overall Length", "2,080 mm"),
+                                        SpecItem("Overall Width", "805 mm"),
+                                        SpecItem("Overall Height", "1,055 mm"),
+                                        SpecItem("Wheelbase", "1,406 mm"),
+                                        SpecItem("Seat Height", "799 mm"),
+                                        SpecItem("Kerb Weight", "146 kg"),
+                                    ),
+                                )
+
+                                SpecCard(
+                                    title = "Chassis & Suspension",
+                                    icon = DimensionsIcon,
+                                    items = listOf(
+                                        SpecItem("Front Suspension", "Showa 41 mm USD Forks"),
+                                        SpecItem("Rear Suspension", "Monoshock (Pro-Link)"),
+                                        SpecItem("Front Brake", "310 mm Disc (ABS)"),
+                                        SpecItem("Rear Brake", "240 mm Disc (ABS)"),
+                                    ),
+                                )
+
+                                SpecCard(
+                                    title = "Tyres & Wheels",
+                                    icon = DimensionsIcon,
+                                    items = listOf(
+                                        SpecItem("Front Tyre", "110/70 R17"),
+                                        SpecItem("Rear Tyre", "150/60 R17"),
+                                        SpecItem("Front Wheel", "17 inch"),
+                                        SpecItem("Rear Wheel", "17 inch"),
+                                    ),
+                                )
+
+                                SpecCard(
+                                    title = "Fuel & Capacity",
+                                    icon = DimensionsIcon,
+                                    items = listOf(
+                                        SpecItem("Fuel Tank Capacity", "9.7 L"),
+                                        SpecItem("Reserve Capacity", "–"),
+                                        SpecItem("Mileage (Approx.)", "28–30 km/l"),
+                                    ),
+                                )
+
                             }
                         }
 
