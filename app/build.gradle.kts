@@ -59,6 +59,9 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     debugImplementation(libs.androidx.compose.ui.tooling)
 
+    //Icons
+    implementation(libs.androidx.compose.material.icons.extended)
+
     // Coil
     implementation(libs.coil)
     implementation(libs.coil.network)

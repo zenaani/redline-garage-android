@@ -1,9 +1,11 @@
 package com.zenaani.redlinegarage.ui.home
 
 import android.R
+import android.R.attr.screenSize
 import android.widget.Space
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.TargetedFlingBehavior
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -45,6 +47,7 @@ import androidx.compose.foundation.gestures.snapping.SnapPosition
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
@@ -54,8 +57,12 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Icon
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -63,6 +70,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -76,6 +84,8 @@ import com.zenaani.redlinegarage.core.components.EngineItemData
 import com.zenaani.redlinegarage.core.components.EngineSpecsGrid
 import com.zenaani.redlinegarage.core.components.ExploreCard
 import com.zenaani.redlinegarage.core.components.FeaturedCard
+import com.zenaani.redlinegarage.core.components.IconBadge
+import com.zenaani.redlinegarage.core.components.SearchReveal
 import com.zenaani.redlinegarage.core.components.SpecCard
 import com.zenaani.redlinegarage.core.components.SpecItem
 import com.zenaani.redlinegarage.core.components.performance.AccelerationCard
@@ -113,6 +123,8 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel(), onItemClick: (Int) ->
                 is HomeUiState.Success -> {
 
                     val data = uiState.data
+                    var isSearch by remember { mutableStateOf(false) }
+
 
                     Column(
                         modifier = Modifier
@@ -159,16 +171,31 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel(), onItemClick: (Int) ->
 
                             // Bike Intro
                             Column(
-                                modifier = Modifier.padding(start = 8.dp, top = 16.dp)
+                                modifier = Modifier.padding(start = 8.dp, end = 8.dp, top = 16.dp)
                             ) {
-                                Text(
-                                    "REDLINE",
-                                    fontSize = 24.sp,
-                                    lineHeight = 2.sp,
-                                    color = Color.White,
-                                    fontFamily = BodoniModa,
-                                    fontWeight = FontWeight.Bold
-                                )
+
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Text(
+                                        "REDLINE",
+                                        fontSize = 24.sp,
+                                        lineHeight = 2.sp,
+                                        color = Color.White,
+                                        fontFamily = BodoniModa,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                    Icon(
+                                        imageVector = Icons.Default.Search,
+                                        contentDescription = "Search",
+                                        tint = Color.White,
+                                        modifier = Modifier.clickable(onClick = { isSearch = true })
+                                    )
+
+
+                                }
+
                                 Text(
                                     "GARAGE",
                                     fontSize = 10.sp,
@@ -268,6 +295,8 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel(), onItemClick: (Int) ->
                         Spacer(modifier = Modifier.height(8.dp))
 
                     }
+
+                    SearchReveal(isSearchOpen = isSearch, onSearchClose = { isSearch = false })
                 }
 
                 is HomeUiState.Error -> {
