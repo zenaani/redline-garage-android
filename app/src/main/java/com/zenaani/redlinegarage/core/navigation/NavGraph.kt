@@ -13,7 +13,9 @@ import com.zenaani.redlinegarage.ui.profile.ProfileScreen
 fun AppNavGraph(navController: NavHostController) {
     NavHost(navController = navController, startDestination = Route.Home) {
         composable<Route.Home> {
-            HomeScreen(onItemClick = { })
+            HomeScreen(
+                onItemClick = { },
+                onExploreBannerClick = { navController.navigate(Route.Bike(0)) })
 //            HomeScreen(
 //                onItemClick = { brandId ->
 //                    navController.navigate(Route.Model(brandId))

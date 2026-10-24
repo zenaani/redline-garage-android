@@ -20,7 +20,7 @@ class BikeViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-//    private val modelId = savedStateHandle.toRoute<Route.Bike>().modelId
+    private val modelId = savedStateHandle.toRoute<Route.Bike>().modelId
 
     private val _uiState = MutableStateFlow<BikeUiState>(BikeUiState.Loading)
     val uiState = _uiState.asStateFlow()

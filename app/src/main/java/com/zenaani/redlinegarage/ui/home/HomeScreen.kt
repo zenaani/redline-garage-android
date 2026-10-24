@@ -51,6 +51,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -78,16 +79,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.zenaani.redlinegarage.core.components.BikeCard
 import com.zenaani.redlinegarage.core.components.BikeDetailTab
+import com.zenaani.redlinegarage.core.components.BrandPill
 import com.zenaani.redlinegarage.core.components.DimensionsIcon
 import com.zenaani.redlinegarage.core.components.EngineItemData
 import com.zenaani.redlinegarage.core.components.EngineSpecsGrid
 import com.zenaani.redlinegarage.core.components.ExploreCard
+import com.zenaani.redlinegarage.core.components.ExploreSection
 import com.zenaani.redlinegarage.core.components.FeaturedCard
 import com.zenaani.redlinegarage.core.components.IconBadge
 import com.zenaani.redlinegarage.core.components.SearchReveal
 import com.zenaani.redlinegarage.core.components.SpecCard
 import com.zenaani.redlinegarage.core.components.SpecItem
+import com.zenaani.redlinegarage.core.components.TopBannerHome
 import com.zenaani.redlinegarage.core.components.performance.AccelerationCard
 import com.zenaani.redlinegarage.core.components.performance.AccelerationRun
 import com.zenaani.redlinegarage.core.components.performance.ChartPoint
@@ -101,12 +106,19 @@ import kotlin.math.abs
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(viewModel: HomeViewModel = hiltViewModel(), onItemClick: (Int) -> Unit) {
+fun HomeScreen(
+    viewModel: HomeViewModel = hiltViewModel(),
+    onItemClick: (Int) -> Unit,
+    onExploreBannerClick: () -> Unit
+) {
     Scaffold(
         topBar = { },
     ) { innerPadding ->
 
         val uiState = viewModel.uiState.collectAsState().value
+
+        var isSearch by remember { mutableStateOf(false) }
+        var brandName by remember { mutableStateOf("Honda") }
 
         Box(
             modifier = Modifier
@@ -115,194 +127,79 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel(), onItemClick: (Int) ->
             contentAlignment = Alignment.Center
         ) {
 
-            when (uiState) {
-                is HomeUiState.Loading -> {
-                    CircularProgressIndicator()
-                }
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
 
-                is HomeUiState.Success -> {
+                TopBannerHome(onClick = onExploreBannerClick)
 
-                    val data = uiState.data
-                    var isSearch by remember { mutableStateOf(false) }
+                // Explore Motorcycles
+                Column(
+                    modifier = Modifier.padding(horizontal = 8.dp)
+                ) {
+                    ExploreSection()
+                    Spacer(Modifier.height(12.dp))
+                    FeaturedCard()
+                    Spacer(Modifier.height(12.dp))
+                    Text(
+                        "EXPLORE BY BRAND",
+                        fontSize = 16.sp,
+                        color = Color.White,
+                        fontFamily = BodoniModa,
+                        fontWeight = FontWeight.Bold
+                    )
 
+                    Spacer(Modifier.height(8.dp))
 
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .verticalScroll(rememberScrollState()),
-                        verticalArrangement = Arrangement.spacedBy(12.dp),
-                    ) {
-
-                        // Top Banner
-                        Box() {
-                            Image(
-                                painter = painterResource(com.zenaani.redlinegarage.R.drawable.honda_cb300r),
-                                contentDescription = null,
-                                modifier = Modifier.offset(x = 40.dp)
-                            )
-
-                            // Gradient Overlay (left -> right)
-                            Box(
-                                modifier = Modifier
-                                    .matchParentSize()
-                                    .background(
-                                        Brush.horizontalGradient(
-                                            colors = listOf(
-                                                Color.Black, Color.Transparent
-                                            )
-                                        )
-                                    )
-                            )
-
-                            // Gradient Overlay (bottom -> top)
-                            Box(
-                                modifier = Modifier
-                                    .align(Alignment.BottomCenter)
-                                    .fillMaxWidth()
-                                    .height(50.dp)
-                                    .background(
-                                        Brush.verticalGradient(
-                                            colors = listOf(
-                                                Color.Transparent, Color.Black
-                                            )
-                                        )
-                                    )
-                            )
-
-                            // Bike Intro
-                            Column(
-                                modifier = Modifier.padding(start = 8.dp, end = 8.dp, top = 16.dp)
-                            ) {
-
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceBetween
-                                ) {
-                                    Text(
-                                        "REDLINE",
-                                        fontSize = 24.sp,
-                                        lineHeight = 2.sp,
-                                        color = Color.White,
-                                        fontFamily = BodoniModa,
-                                        fontWeight = FontWeight.Bold
-                                    )
-                                    Icon(
-                                        imageVector = Icons.Default.Search,
-                                        contentDescription = "Search",
-                                        tint = Color.White,
-                                        modifier = Modifier.clickable(onClick = { isSearch = true })
-                                    )
-
-
-                                }
-
-                                Text(
-                                    "GARAGE",
-                                    fontSize = 10.sp,
-                                    color = Color.White,
-                                    fontWeight = FontWeight.ExtraLight,
-                                    letterSpacing = 3.sp
-                                )
-                                Spacer(modifier = Modifier.height(12.dp))
-                                Text(
-                                    "REAL BIKES. REAL NUMBERS",
-                                    fontSize = 8.sp,
-                                    color = Color.Gray,
-                                    fontWeight = FontWeight.ExtraLight,
-                                    letterSpacing = 1.sp
-                                )
-                                Spacer(modifier = Modifier.height(60.dp))
-                                Text(
-                                    "HONDA",
-                                    fontSize = 10.sp,
-                                    color = Color.White,
-                                    fontWeight = FontWeight.ExtraLight,
-                                    letterSpacing = 3.sp
-                                )
-                                Text(
-                                    "CB300R",
-                                    fontSize = 34.sp,
-                                    lineHeight = 2.sp,
-                                    color = Color.White,
-                                    fontFamily = BodoniModa,
-                                    fontWeight = FontWeight.Bold
-                                )
-                                Text(
-                                    "MINIMAL. POWERFUL. BUILT \nFOR THE EVERYDAY RIDE.",
-                                    fontSize = 8.sp,
-                                    color = Color.Gray,
-                                    fontWeight = FontWeight.ExtraLight,
-                                    letterSpacing = 1.sp
-                                )
-
-                                Spacer(modifier = Modifier.height(18.dp))
-
-                                Text(
-                                    buildAnnotatedString {
-                                        withStyle(SpanStyle(color = Color.Red)) {
-                                            append("EXPLORE DETAILS ")
-                                        }
-                                        withStyle(SpanStyle(color = Color.Gray)) {
-                                            append("→")
-                                        }
-                                    },
-                                    fontSize = 8.sp,
-                                    fontWeight = FontWeight.ExtraLight,
-                                    letterSpacing = 1.sp
-                                )
-                            }
-                        }
-
-
-                        // Explore Motorcycles
-                        Column(
-                            modifier = Modifier.padding(horizontal = 8.dp)
-                        ) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Text(
-                                    "EXPLORE MOTORCYCLES",
-                                    fontSize = 16.sp,
-                                    color = Color.White,
-                                    fontFamily = BodoniModa,
-                                    fontWeight = FontWeight.Bold
-                                )
-                                Text(
-                                    text = "View all →",
-                                    color = Color.White,
-                                    fontSize = 10.sp,
-                                    fontWeight = FontWeight.ExtraLight,
-                                    letterSpacing = 1.sp
-                                )
-                            }
-
-                            Spacer(Modifier.height(12.dp))
+                    when(uiState.brandsState) {
+                        is ContentState.Error -> { Text(uiState.brandsState.message) }
+                        ContentState.Idle -> { }
+                        ContentState.Loading -> { CircularProgressIndicator() }
+                        ContentState.Success -> {
                             LazyRow(
                                 horizontalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
-                                items(5) {
-                                    ExploreCard()
+                                items(uiState.brands?.content ?: emptyList() ) {
+                                    BrandPill(name = it.name, logo = it.logoUrl, onClick = {
+                                        viewModel.onBrandSelection(it.id)
+                                        brandName = it.name
+                                    })
+                                }
+                            }
+                        }
+                    }
+
+                    Spacer(Modifier.height(24.dp))
+
+                    when(uiState.bikesState) {
+                        is ContentState.Error -> { Text(uiState.bikesState.message) }
+                        ContentState.Idle -> { }
+                        ContentState.Loading -> { CircularProgressIndicator() }
+                        ContentState.Success -> {
+                            Column(
+                                verticalArrangement = Arrangement.spacedBy(12.dp),
+                            ) {
+//                                items(uiState.bikes?.content ?: emptyList()) {
+//                                    BikeCard(brand = brandName, model = it.modelName)
+//                                }
+                                uiState.bikes?.content?.forEach {
+                                    BikeCard(brand = brandName, model = it.modelName, segment = it.segment, variant = it.variant)
                                 }
                             }
 
-                            Spacer(Modifier.height(12.dp))
-                            FeaturedCard()
                         }
-
-                        Spacer(modifier = Modifier.height(8.dp))
-
                     }
 
-                    SearchReveal(isSearchOpen = isSearch, onSearchClose = { isSearch = false })
                 }
 
-                is HomeUiState.Error -> {
-                    Text(uiState.message)
-                }
+                Spacer(modifier = Modifier.height(8.dp))
+
             }
+
+            SearchReveal(isSearchOpen = isSearch, onSearchClose = { isSearch = false })
 
         }
 
