@@ -14,13 +14,8 @@ fun AppNavGraph(navController: NavHostController) {
     NavHost(navController = navController, startDestination = Route.Home) {
         composable<Route.Home> {
             HomeScreen(
-                onItemClick = { },
-                onExploreBannerClick = { navController.navigate(Route.Bike(0)) })
-//            HomeScreen(
-//                onItemClick = { brandId ->
-//                    navController.navigate(Route.Model(brandId))
-//                }
-//            )
+                onItemClick = { navController.navigate(Route.Bike(modelId = it)) },
+                onExploreBannerClick = { navController.navigate(Route.Bike(1)) })
         }
 
         composable<Route.Model> {

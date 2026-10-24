@@ -26,7 +26,7 @@ class BikeViewModel @Inject constructor(
     val uiState = _uiState.asStateFlow()
 
     init {
-        getBikeDetails(1)
+        getBikeDetails(modelId)
     }
 
     private fun getBikeDetails(modelId: Int) {

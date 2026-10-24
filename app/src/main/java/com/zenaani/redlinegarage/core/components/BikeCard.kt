@@ -26,12 +26,13 @@ import com.zenaani.redlinegarage.R
 import com.zenaani.redlinegarage.ui.theme.BodoniModa
 
 @Composable
-fun BikeCard(modifier: Modifier = Modifier, brand: String, model: String, segment: String, variant: String) {
+fun BikeCard(modifier: Modifier = Modifier, brand: String, model: String, segment: String, variant: String, onClick: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth(),
         shape = RoundedCornerShape(4.dp),
         colors = CardDefaults.cardColors(containerColor = Color.Black),
+        onClick = onClick
     ) {
         Row() {
             Image(
@@ -71,5 +72,5 @@ fun BikeCard(modifier: Modifier = Modifier, brand: String, model: String, segmen
 @Preview
 @Composable
 fun BikeCardPreview() {
-    BikeCard(brand = "Honda", model = "CB300R", segment = "Naked Sport", variant = "Standard")
+    BikeCard(brand = "Honda", model = "CB300R", segment = "Naked Sport", variant = "Standard", onClick = { })
 }

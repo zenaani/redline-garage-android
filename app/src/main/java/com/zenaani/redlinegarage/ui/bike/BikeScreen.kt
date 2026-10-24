@@ -66,12 +66,6 @@ import com.zenaani.redlinegarage.ui.theme.BodoniModa
 fun BikeScreen(viewModel: BikeViewModel = hiltViewModel()) {
     Scaffold(
         topBar = {
-//            TopAppBar(
-//                title = {
-//                    Text("Details")
-//                },
-//                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.primary)
-//            )
         },
     ) { innerPadding ->
 
@@ -240,9 +234,8 @@ fun BikeScreen(viewModel: BikeViewModel = hiltViewModel()) {
                             "PERFORMANCE" -> {
                                 AccelerationCard(
                                     runs = listOf(
-                                        AccelerationRun("0 – 60 km/h", 2.94f),
-                                        AccelerationRun("0 – 100 km/h", 7.35f),
-                                        AccelerationRun("0 – 140 km/h", 0f), // No verified figure
+                                        AccelerationRun("0 – 60 km/h", performanceData.zeroToSixtyBest.toFloat()),
+                                        AccelerationRun("0 – 100 km/h", performanceData.zeroToHundredBest.toFloat()),
                                     ),
                                 )
 
@@ -285,8 +278,8 @@ fun BikeScreen(viewModel: BikeViewModel = hiltViewModel()) {
                                 PowerTorqueCard(
                                     power = power,
                                     torque = torque,
-                                    peakPower = ChartPoint(9000f, 31.1f),
-                                    peakTorque = ChartPoint(7750f, 27.5f),
+                                    peakPower = ChartPoint(9000f, engineData.maxPowerBhp.toFloat()),
+                                    peakTorque = ChartPoint(7750f, engineData.maxTorqueNm.toFloat()),
                                 )
                             }
 
@@ -381,73 +374,6 @@ fun BikeScreen(viewModel: BikeViewModel = hiltViewModel()) {
 
 
                         Spacer(modifier = Modifier.height(12.dp))
-
-
-//                        // Bike Info
-//                        Card(modifier = Modifier.fillMaxWidth()) {
-//                            Column(
-//                                modifier = Modifier.padding(16.dp),
-//                                verticalArrangement = Arrangement.spacedBy(6.dp)
-//                            ) {
-//
-//                                Text(
-//                                    text = "${data.brandName} ${data.modelName}",
-//                                    style = MaterialTheme.typography.titleLarge
-//                                )
-//
-//                                Text("Variant : ${data.variant}")
-//                                Text("Segment : ${data.segment}")
-//                                Text("Launch Year : ${data.launchYear}")
-//                            }
-//                        }
-//
-//                        // Engine Info
-//                        Card(modifier = Modifier.fillMaxWidth()) {
-//                            Column(
-//                                modifier = Modifier.padding(16.dp),
-//                                verticalArrangement = Arrangement.spacedBy(6.dp)
-//                            ) {
-//
-//                                Text(
-//                                    text = "Engine",
-//                                    style = MaterialTheme.typography.titleMedium
-//                                )
-//
-//                                Text("Engine CC : ${engineData.engineCc} cc")
-//                                Text("Engine Type : ${engineData.engineType}")
-//                                Text("Max Power : ${engineData.maxPowerBhp} bhp")
-//                                Text("Power RPM : ${engineData.powerRpm} rpm")
-//                                Text("Max Torque : ${engineData.maxTorqueNm} Nm")
-//                                Text("Torque RPM : ${engineData.torqueRpm} rpm")
-//                                Text("Transmission : ${engineData.transmission}")
-//                                Text("Kerb Weight : ${engineData.kerbWeightKg} kg")
-//                            }
-//                        }
-//
-//                        // Performance Info
-//                        Card(modifier = Modifier.fillMaxWidth()) {
-//                            Column(
-//                                modifier = Modifier.padding(16.dp),
-//                                verticalArrangement = Arrangement.spacedBy(6.dp)
-//                            ) {
-//
-//                                Text(
-//                                    text = "Performance",
-//                                    style = MaterialTheme.typography.titleMedium
-//                                )
-//
-//                                Text("0-60 Best : ${performanceData.zeroToSixtyBest} sec")
-//                                Text("0-60 Avg : ${performanceData.zeroToSixtyAvg} sec")
-//
-//                                Text("0-100 Best : ${performanceData.zeroToHundredBest} sec")
-//                                Text("0-100 Avg : ${performanceData.zeroToHundredAvg} sec")
-//
-//                                Text("Top Speed : ${performanceData.topSpeedTestedKmh} km/h")
-//
-//                                Text("Quarter Mile Best : ${performanceData.quarterMileBest} sec")
-//                                Text("Quarter Mile Avg : ${performanceData.quarterMileAvg} sec")
-//                            }
-//                        }
                     }
 
                 }

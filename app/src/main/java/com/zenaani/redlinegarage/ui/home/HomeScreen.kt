@@ -186,7 +186,7 @@ fun HomeScreen(
 //                                    BikeCard(brand = brandName, model = it.modelName)
 //                                }
                                 uiState.bikes?.content?.forEach {
-                                    BikeCard(brand = brandName, model = it.modelName, segment = it.segment, variant = it.variant)
+                                    BikeCard(brand = brandName, model = it.modelName, segment = it.segment, variant = it.variant, onClick = { onItemClick(it.id) } )
                                 }
                             }
 
