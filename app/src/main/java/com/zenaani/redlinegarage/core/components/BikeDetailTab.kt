@@ -38,11 +38,11 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 fun BikeDetailTab(
-    selectedTab: String,
-    onTabSelected: (String) -> Unit,
+    selectedTab: BikeDetailTab,
+    onTabSelected: (BikeDetailTab) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val tabs = listOf("OVERVIEW", "PERFORMANCE", "ENGINE", "SPECS")
+    val tabs = BikeDetailTab.entries
     val selectedIndex = tabs.indexOf(selectedTab).coerceAtLeast(0)
 
     val density = LocalDensity.current
@@ -76,7 +76,7 @@ fun BikeDetailTab(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = tab,
+                        text = tab.text,
                         fontSize = 8.sp,
                         color = Color.White,
                         fontWeight = FontWeight.ExtraLight,
@@ -110,10 +110,17 @@ fun BikeDetailTab(
     }
 }
 
+enum class BikeDetailTab(val text: String) {
+    OVERVIEW("OVERVIEW"),
+    PERFORMANCE("PERFORMANCE"),
+    SPECS("SPECS"),
+    ACCESSORIES("ACCESSORIES")
+}
+
 
 @Preview
 @Composable
 fun BikeDetailsTabPreview() {
-    BikeDetailTab("Performance", onTabSelected = { })
+    BikeDetailTab(BikeDetailTab.PERFORMANCE, onTabSelected = { })
 }
 

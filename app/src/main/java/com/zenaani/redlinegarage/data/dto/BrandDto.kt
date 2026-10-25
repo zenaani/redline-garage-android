@@ -3,7 +3,7 @@ package com.zenaani.redlinegarage.data.dto
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class BrandResponseDto(
+data class BrandPagedDto(
     val content: List<BrandDto> = emptyList(),
     val last: Boolean,
     val page: Int,

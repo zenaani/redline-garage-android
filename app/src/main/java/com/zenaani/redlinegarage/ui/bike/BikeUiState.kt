@@ -1,9 +1,14 @@
 package com.zenaani.redlinegarage.ui.bike
 
+import com.zenaani.redlinegarage.data.dto.AccessoryDto
+import com.zenaani.redlinegarage.data.dto.AccessoryPagedDto
 import com.zenaani.redlinegarage.data.dto.BikeDetailsDto
+import com.zenaani.redlinegarage.ui.home.ContentState
 
-sealed interface BikeUiState {
-    data object Loading : BikeUiState
-    data class Success(val data: BikeDetailsDto) : BikeUiState
-    data class Error(val message: String) : BikeUiState
-}
+
+data class BikeUiState(
+    val bikeDetails: BikeDetailsDto? = null,
+    val accessories: AccessoryPagedDto? = null,
+    val bikeDetailsState: ContentState = ContentState.Loading,
+    val accessoriesState: ContentState = ContentState.Idle
+)

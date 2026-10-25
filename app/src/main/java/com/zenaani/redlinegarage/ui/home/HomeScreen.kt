@@ -2,6 +2,7 @@ package com.zenaani.redlinegarage.ui.home
 
 import android.R
 import android.R.attr.screenSize
+import android.graphics.Paint
 import android.widget.Space
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -89,6 +90,7 @@ import com.zenaani.redlinegarage.core.components.ExploreCard
 import com.zenaani.redlinegarage.core.components.ExploreSection
 import com.zenaani.redlinegarage.core.components.FeaturedCard
 import com.zenaani.redlinegarage.core.components.IconBadge
+import com.zenaani.redlinegarage.core.components.NavBar
 import com.zenaani.redlinegarage.core.components.SearchReveal
 import com.zenaani.redlinegarage.core.components.SpecCard
 import com.zenaani.redlinegarage.core.components.SpecItem
@@ -200,8 +202,9 @@ fun HomeScreen(
             }
 
             SearchReveal(isSearchOpen = isSearch, onSearchClose = { isSearch = false })
-
+            NavBar(modifier = Modifier.align(Alignment.BottomEnd).padding(24.dp))
         }
+
 
 
     }

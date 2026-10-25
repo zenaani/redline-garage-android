@@ -7,7 +7,6 @@ import androidx.navigation.compose.composable
 import com.zenaani.redlinegarage.ui.bike.BikeScreen
 import com.zenaani.redlinegarage.ui.home.HomeScreen
 import com.zenaani.redlinegarage.ui.models.ModelsScreen
-import com.zenaani.redlinegarage.ui.profile.ProfileScreen
 
 @Composable
 fun AppNavGraph(navController: NavHostController) {

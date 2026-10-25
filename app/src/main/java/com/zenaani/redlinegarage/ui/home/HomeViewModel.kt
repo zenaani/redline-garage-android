@@ -2,8 +2,6 @@ package com.zenaani.redlinegarage.ui.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.zenaani.redlinegarage.data.dto.BrandResponseDto
-import com.zenaani.redlinegarage.data.dto.ModelResponseDto
 import com.zenaani.redlinegarage.data.repository.BrandRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CancellationException

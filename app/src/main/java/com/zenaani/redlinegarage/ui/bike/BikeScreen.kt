@@ -1,5 +1,6 @@
 package com.zenaani.redlinegarage.ui.bike
 
+import android.widget.Space
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -29,6 +30,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -45,7 +47,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zenaani.redlinegarage.R
+import com.zenaani.redlinegarage.core.components.AccessoryCard
 import com.zenaani.redlinegarage.core.components.performance.AccelerationCard
 import com.zenaani.redlinegarage.core.components.performance.AccelerationRun
 import com.zenaani.redlinegarage.core.components.BikeDetailTab
@@ -59,6 +63,7 @@ import com.zenaani.redlinegarage.core.components.performance.ChartSeries
 import com.zenaani.redlinegarage.core.components.performance.PerfColors
 import com.zenaani.redlinegarage.core.components.performance.PowerTorqueCard
 import com.zenaani.redlinegarage.core.components.performance.pts
+import com.zenaani.redlinegarage.ui.home.ContentState
 import com.zenaani.redlinegarage.ui.theme.BodoniModa
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -69,7 +74,7 @@ fun BikeScreen(viewModel: BikeViewModel = hiltViewModel()) {
         },
     ) { innerPadding ->
 
-        val uiState = viewModel.uiState.collectAsState().value
+        val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
 
         Box(
             modifier = Modifier
@@ -77,15 +82,19 @@ fun BikeScreen(viewModel: BikeViewModel = hiltViewModel()) {
                 .fillMaxSize(), contentAlignment = Alignment.Center
         ) {
 
-            when (uiState) {
-                is BikeUiState.Loading -> {
+            when (uiState.bikeDetailsState) {
+                is ContentState.Idle -> {
+
+                }
+
+                is ContentState.Loading -> {
                     CircularProgressIndicator()
                 }
 
-                is BikeUiState.Success -> {
-                    val data = uiState.data
-                    val engineData = data.engine
-                    val performanceData = data.performance
+                is ContentState.Success -> {
+                    val data = uiState.bikeDetails
+                    val engineData = data?.engine
+                    val performanceData = data?.performance
 
                     Column(
                         modifier = Modifier
@@ -143,14 +152,14 @@ fun BikeScreen(viewModel: BikeViewModel = hiltViewModel()) {
                                     letterSpacing = 3.sp
                                 )
                                 Text(
-                                    data.brandName,
+                                    data?.brandName ?: "-",
                                     fontSize = 34.sp,
                                     color = Color.White,
                                     fontFamily = BodoniModa,
                                     fontWeight = FontWeight.Bold
                                 )
                                 Text(
-                                    data.modelName,
+                                    data?.modelName ?: "-",
                                     fontSize = 34.sp,
                                     lineHeight = 2.sp,
                                     color = Color.White,
@@ -184,7 +193,7 @@ fun BikeScreen(viewModel: BikeViewModel = hiltViewModel()) {
                         }
 
                         // Switchable Tab
-                        var selectedTab by remember { mutableStateOf("Performance") }
+                        var selectedTab by remember { mutableStateOf(BikeDetailTab.OVERVIEW) }
                         BikeDetailTab(
                             selectedTab = selectedTab,
                             onTabSelected = { selectedTab = it })
@@ -207,23 +216,27 @@ fun BikeScreen(viewModel: BikeViewModel = hiltViewModel()) {
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
-                                KeyFigureItem("Max Power", engineData.maxPowerBhp.toString(), "hp")
+                                KeyFigureItem(
+                                    "Max Power",
+                                    engineData?.maxPowerBhp?.toString() ?: "-",
+                                    "hp"
+                                )
                                 VerticalDivider(modifier = Modifier.height(60.dp))
                                 KeyFigureItem(
                                     "Max Torque",
-                                    engineData.maxTorqueNm.toString(),
+                                    engineData?.maxTorqueNm?.toString() ?: "-",
                                     "Nm",
                                 )
                                 VerticalDivider(modifier = Modifier.height(60.dp))
                                 KeyFigureItem(
                                     "0-60 km/h",
-                                    performanceData.zeroToSixtyAvg.toString(),
+                                    performanceData?.zeroToSixtyAvg?.toString() ?: "-",
                                     "s",
                                 )
                                 VerticalDivider(modifier = Modifier.height(60.dp))
                                 KeyFigureItem(
                                     "Top Speed",
-                                    performanceData.topSpeedTestedKmh.toString(),
+                                    performanceData?.topSpeedTestedKmh?.toString() ?: "-",
                                     "Km/h",
                                 )
                             }
@@ -231,11 +244,21 @@ fun BikeScreen(viewModel: BikeViewModel = hiltViewModel()) {
 
                         Spacer(modifier = Modifier.height(8.dp))
                         when (selectedTab) {
-                            "PERFORMANCE" -> {
+                            BikeDetailTab.OVERVIEW -> {
+
+                            }
+
+                            BikeDetailTab.PERFORMANCE -> {
                                 AccelerationCard(
                                     runs = listOf(
-                                        AccelerationRun("0 – 60 km/h", performanceData.zeroToSixtyBest.toFloat()),
-                                        AccelerationRun("0 – 100 km/h", performanceData.zeroToHundredBest.toFloat()),
+                                        AccelerationRun(
+                                            "0 – 60 km/h",
+                                            performanceData?.zeroToSixtyBest?.toFloat() ?: 0f
+                                        ),
+                                        AccelerationRun(
+                                            "0 – 100 km/h",
+                                            performanceData?.zeroToHundredBest?.toFloat() ?: 0f
+                                        ),
                                     ),
                                 )
 
@@ -278,12 +301,18 @@ fun BikeScreen(viewModel: BikeViewModel = hiltViewModel()) {
                                 PowerTorqueCard(
                                     power = power,
                                     torque = torque,
-                                    peakPower = ChartPoint(9000f, engineData.maxPowerBhp.toFloat()),
-                                    peakTorque = ChartPoint(7750f, engineData.maxTorqueNm.toFloat()),
+                                    peakPower = ChartPoint(
+                                        9000f,
+                                        engineData?.maxPowerBhp?.toFloat() ?: 0f
+                                    ),
+                                    peakTorque = ChartPoint(
+                                        7750f,
+                                        engineData?.maxTorqueNm?.toFloat() ?: 0f
+                                    ),
                                 )
                             }
 
-                            "ENGINE" -> {
+                            BikeDetailTab.SPECS -> {
                                 //Engine Info
                                 Column(
                                     modifier = Modifier.padding(horizontal = 8.dp)
@@ -297,77 +326,172 @@ fun BikeScreen(viewModel: BikeViewModel = hiltViewModel()) {
                                     )
                                     Spacer(modifier = Modifier.height(12.dp))
 
-                                    val engineItems = listOf(
-                                        EngineItemData("Engine Type", engineData.engineType),
-                                        EngineItemData(
-                                            "Engine Capacity",
-                                            "${engineData.engineCc} cc"
-                                        ),
-                                        EngineItemData(
-                                            "Max Power",
-                                            "${engineData.maxPowerBhp} bhp"
-                                        ),
-                                        EngineItemData("Power RPM", "${engineData.powerRpm} rpm"),
-                                        EngineItemData(
-                                            "Max Torque",
-                                            "${engineData.maxTorqueNm} Nm"
-                                        ),
-                                        EngineItemData("Torque RPM", "${engineData.torqueRpm} rpm"),
-                                        EngineItemData("Transmission", engineData.transmission),
-                                        EngineItemData(
-                                            "Kerb Weight",
-                                            "${engineData.kerbWeightKg} kg"
-                                        )
-                                    )
+                                    val engineItems = buildList {
+                                        engineData?.let { engine ->
+                                            add(
+                                                EngineItemData(
+                                                    "Engine Type",
+                                                    engine.engineType.orEmpty()
+                                                )
+                                            )
+                                            add(
+                                                EngineItemData(
+                                                    "Engine Capacity",
+                                                    engine.engineCc?.let { "$it cc" } ?: "N/A"))
+                                            add(
+                                                EngineItemData(
+                                                    "Max Power",
+                                                    engine.maxPowerBhp?.let { "$it bhp" } ?: "N/A"))
+                                            add(
+                                                EngineItemData(
+                                                    "Power RPM",
+                                                    engine.powerRpm?.let { "$it rpm" } ?: "N/A"))
+                                            add(
+                                                EngineItemData(
+                                                    "Max Torque",
+                                                    engine.maxTorqueNm?.let { "$it Nm" } ?: "N/A"))
+                                            add(
+                                                EngineItemData(
+                                                    "Torque RPM",
+                                                    engine.torqueRpm?.let { "$it rpm" } ?: "N/A"))
+                                            add(
+                                                EngineItemData(
+                                                    "Transmission",
+                                                    engine.transmission.orEmpty()
+                                                )
+                                            )
+                                            add(
+                                                EngineItemData(
+                                                    "Kerb Weight",
+                                                    engine.kerbWeightKg?.let { "$it kg" } ?: "N/A"))
+                                        }
+                                    }
                                     EngineSpecsGrid(engineItems)
+
+                                    Spacer(modifier = Modifier.height(12.dp))
+
+                                    SpecCard(
+                                        title = "Dimensions & Weight",
+                                        icon = DimensionsIcon,
+                                        items = listOf(
+                                            SpecItem("Overall Length", "2,080 mm"),
+                                            SpecItem("Overall Width", "805 mm"),
+                                            SpecItem("Overall Height", "1,055 mm"),
+                                            SpecItem("Wheelbase", "1,406 mm"),
+                                            SpecItem("Seat Height", "799 mm"),
+                                            SpecItem("Kerb Weight", "146 kg"),
+                                        ),
+                                    )
+
+                                    Spacer(modifier = Modifier.height(12.dp))
+
+                                    SpecCard(
+                                        title = "Chassis & Suspension",
+                                        icon = DimensionsIcon,
+                                        items = listOf(
+                                            SpecItem("Front Suspension", "Showa 41 mm USD Forks"),
+                                            SpecItem("Rear Suspension", "Monoshock (Pro-Link)"),
+                                            SpecItem("Front Brake", "310 mm Disc (ABS)"),
+                                            SpecItem("Rear Brake", "240 mm Disc (ABS)"),
+                                        ),
+                                    )
+
+                                    Spacer(modifier = Modifier.height(12.dp))
+
+                                    SpecCard(
+                                        title = "Tyres & Wheels",
+                                        icon = DimensionsIcon,
+                                        items = listOf(
+                                            SpecItem("Front Tyre", "110/70 R17"),
+                                            SpecItem("Rear Tyre", "150/60 R17"),
+                                            SpecItem("Front Wheel", "17 inch"),
+                                            SpecItem("Rear Wheel", "17 inch"),
+                                        ),
+                                    )
+
+                                    Spacer(modifier = Modifier.height(12.dp))
+
+                                    SpecCard(
+                                        title = "Fuel & Capacity",
+                                        icon = DimensionsIcon,
+                                        items = listOf(
+                                            SpecItem("Fuel Tank Capacity", "9.7 L"),
+                                            SpecItem("Reserve Capacity", "–"),
+                                            SpecItem("Mileage (Approx.)", "28–30 km/l"),
+                                        ),
+                                    )
                                 }
                             }
 
-                            "SPECS" -> {
-                                SpecCard(
-                                    title = "Dimensions & Weight",
-                                    icon = DimensionsIcon,
-                                    items = listOf(
-                                        SpecItem("Overall Length", "2,080 mm"),
-                                        SpecItem("Overall Width", "805 mm"),
-                                        SpecItem("Overall Height", "1,055 mm"),
-                                        SpecItem("Wheelbase", "1,406 mm"),
-                                        SpecItem("Seat Height", "799 mm"),
-                                        SpecItem("Kerb Weight", "146 kg"),
-                                    ),
-                                )
+                            BikeDetailTab.ACCESSORIES -> {
+                                LaunchedEffect(viewModel.modelId) {
+                                    viewModel.getAccessories(viewModel.modelId)
+                                }
+                                when (uiState.accessoriesState) {
+                                    is ContentState.Error -> {
+                                        Text(uiState.accessoriesState.message)
+                                    }
 
-                                SpecCard(
-                                    title = "Chassis & Suspension",
-                                    icon = DimensionsIcon,
-                                    items = listOf(
-                                        SpecItem("Front Suspension", "Showa 41 mm USD Forks"),
-                                        SpecItem("Rear Suspension", "Monoshock (Pro-Link)"),
-                                        SpecItem("Front Brake", "310 mm Disc (ABS)"),
-                                        SpecItem("Rear Brake", "240 mm Disc (ABS)"),
-                                    ),
-                                )
+                                    ContentState.Idle -> {}
+                                    ContentState.Loading -> {
+                                        CircularProgressIndicator()
+                                    }
 
-                                SpecCard(
-                                    title = "Tyres & Wheels",
-                                    icon = DimensionsIcon,
-                                    items = listOf(
-                                        SpecItem("Front Tyre", "110/70 R17"),
-                                        SpecItem("Rear Tyre", "150/60 R17"),
-                                        SpecItem("Front Wheel", "17 inch"),
-                                        SpecItem("Rear Wheel", "17 inch"),
-                                    ),
-                                )
+                                    ContentState.Success -> {
+                                        Column(
+                                        ) {
+                                            Row(
+                                                modifier = Modifier.fillMaxWidth(),
+                                                horizontalArrangement = Arrangement.SpaceBetween,
+                                                verticalAlignment = Alignment.CenterVertically
+                                            ) {
 
-                                SpecCard(
-                                    title = "Fuel & Capacity",
-                                    icon = DimensionsIcon,
-                                    items = listOf(
-                                        SpecItem("Fuel Tank Capacity", "9.7 L"),
-                                        SpecItem("Reserve Capacity", "–"),
-                                        SpecItem("Mileage (Approx.)", "28–30 km/l"),
-                                    ),
-                                )
+                                                Text(
+                                                    "Popular Accessories",
+                                                    fontSize = 22.sp,
+                                                    color = Color.White,
+                                                    fontFamily = BodoniModa,
+                                                    fontWeight = FontWeight.SemiBold,
+                                                )
+
+                                                Text(
+                                                    text = "View all →",
+                                                    color = Color.White,
+                                                    fontSize = 10.sp,
+                                                    fontWeight = FontWeight.ExtraLight,
+                                                    letterSpacing = 1.sp
+                                                )
+
+                                            }
+
+
+                                            Spacer(modifier = Modifier.height(4.dp))
+
+                                            Text(
+                                                "Top picks for a better ride",
+                                                fontSize = 8.sp,
+                                                color = Color.Gray,
+                                                fontWeight = FontWeight.ExtraLight,
+                                                letterSpacing = 1.sp
+                                            )
+
+                                            Spacer(modifier = Modifier.height(12.dp))
+
+                                            LazyVerticalGrid(
+                                                columns = GridCells.Fixed(2),
+                                                modifier = Modifier.height(800.dp),
+                                                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                                                verticalArrangement = Arrangement.spacedBy(12.dp)
+                                            ) {
+                                                items(uiState.accessories?.content ?: emptyList()) {
+                                                    AccessoryCard(name = it.name ?: "-", price = it.price ?: "")
+                                                }
+                                            }
+                                        }
+
+                                    }
+                                }
+
 
                             }
                         }
@@ -378,8 +502,8 @@ fun BikeScreen(viewModel: BikeViewModel = hiltViewModel()) {
 
                 }
 
-                is BikeUiState.Error -> {
-                    Text(uiState.message)
+                is ContentState.Error -> {
+                    Text(uiState.bikeDetailsState.message)
                 }
             }
 
