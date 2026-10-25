@@ -65,6 +65,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -156,15 +157,21 @@ fun HomeScreen(
 
                     Spacer(Modifier.height(8.dp))
 
-                    when(uiState.brandsState) {
-                        is ContentState.Error -> { Text(uiState.brandsState.message) }
-                        ContentState.Idle -> { }
-                        ContentState.Loading -> { CircularProgressIndicator() }
+                    when (uiState.brandsState) {
+                        is ContentState.Error -> {
+                            Text(uiState.brandsState.message)
+                        }
+
+                        ContentState.Idle -> {}
+                        ContentState.Loading -> {
+                            CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
+                        }
+
                         ContentState.Success -> {
                             LazyRow(
                                 horizontalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
-                                items(uiState.brands?.content ?: emptyList() ) {
+                                items(uiState.brands?.content ?: emptyList()) {
                                     BrandPill(name = it.name, logo = it.logoUrl, onClick = {
                                         viewModel.onBrandSelection(it.id)
                                         brandName = it.name
@@ -176,10 +183,16 @@ fun HomeScreen(
 
                     Spacer(Modifier.height(24.dp))
 
-                    when(uiState.bikesState) {
-                        is ContentState.Error -> { Text(uiState.bikesState.message) }
-                        ContentState.Idle -> { }
-                        ContentState.Loading -> { CircularProgressIndicator() }
+                    when (uiState.bikesState) {
+                        is ContentState.Error -> {
+                            Text(uiState.bikesState.message)
+                        }
+
+                        ContentState.Idle -> {}
+                        ContentState.Loading -> {
+                            CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
+                        }
+
                         ContentState.Success -> {
                             Column(
                                 verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -188,7 +201,12 @@ fun HomeScreen(
 //                                    BikeCard(brand = brandName, model = it.modelName)
 //                                }
                                 uiState.bikes?.content?.forEach {
-                                    BikeCard(brand = brandName, model = it.modelName, segment = it.segment, variant = it.variant, onClick = { onItemClick(it.id) } )
+                                    BikeCard(
+                                        brand = brandName,
+                                        model = it.modelName,
+                                        segment = it.segment,
+                                        variant = it.variant,
+                                        onClick = { onItemClick(it.id) })
                                 }
                             }
 
@@ -202,9 +220,36 @@ fun HomeScreen(
             }
 
             SearchReveal(isSearchOpen = isSearch, onSearchClose = { isSearch = false })
-            NavBar(modifier = Modifier.align(Alignment.BottomEnd).padding(24.dp))
-        }
 
+
+
+            // Bottom Dark Gradient
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight(0.25f)
+                    .align(Alignment.BottomCenter)
+                    .background(
+                        brush = Brush.verticalGradient(
+                            colors = listOf(
+                                Color.Transparent,
+                                Color.Transparent,
+                                Color.Black
+                            )
+                        )
+                    )
+            )
+
+            // Bottom Navigation Bar
+            var selectedTab by remember { mutableIntStateOf(0) }
+            NavBar(
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(24.dp),
+                selectedIndex = selectedTab,
+                onItemSelected = { selectedTab = it }
+            )
+        }
 
 
     }

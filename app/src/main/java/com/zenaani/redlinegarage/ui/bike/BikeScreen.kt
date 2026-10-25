@@ -434,7 +434,7 @@ fun BikeScreen(viewModel: BikeViewModel = hiltViewModel()) {
 
                                     ContentState.Idle -> {}
                                     ContentState.Loading -> {
-                                        CircularProgressIndicator()
+                                        CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
                                     }
 
                                     ContentState.Success -> {
