@@ -1,4 +1,7 @@
 package com.zenaani.redlinegarage.ui.profile
 
-class ProfileViewModel {
+import androidx.lifecycle.ViewModel
+
+class ProfileViewModel : ViewModel() {
+
 }

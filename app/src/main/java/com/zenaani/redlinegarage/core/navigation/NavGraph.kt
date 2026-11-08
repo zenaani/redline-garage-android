@@ -1,5 +1,6 @@
 package com.zenaani.redlinegarage.core.navigation
 
+import ProfileScreen
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -32,6 +33,10 @@ fun AppNavGraph(navController: NavHostController) {
 
         composable<Route.Accessory> {
             AccessoryScreen()
+        }
+
+        composable<Route.Profile> {
+            ProfileScreen()
         }
 
     }

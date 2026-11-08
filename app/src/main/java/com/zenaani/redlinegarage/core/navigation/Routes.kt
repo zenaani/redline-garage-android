@@ -13,4 +13,8 @@ sealed interface Route {
 
     @Serializable
     data class Accessory(val accessoryId: Int) : Route
+
+    @Serializable
+    object Profile : Route
+
 }
