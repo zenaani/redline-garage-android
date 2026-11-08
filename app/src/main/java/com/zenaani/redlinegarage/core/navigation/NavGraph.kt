@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.zenaani.redlinegarage.ui.accessory.AccessoryScreen
 import com.zenaani.redlinegarage.ui.bike.BikeScreen
 import com.zenaani.redlinegarage.ui.home.HomeScreen
 import com.zenaani.redlinegarage.ui.models.ModelsScreen
@@ -26,7 +27,12 @@ fun AppNavGraph(navController: NavHostController) {
         }
 
         composable<Route.Bike> {
-            BikeScreen()
+            BikeScreen(onAccessoryClick = { navController.navigate(Route.Accessory(accessoryId = it)) })
         }
+
+        composable<Route.Accessory> {
+            AccessoryScreen()
+        }
+
     }
 }

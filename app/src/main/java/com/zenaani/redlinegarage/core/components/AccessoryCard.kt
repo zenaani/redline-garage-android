@@ -2,6 +2,7 @@ package com.zenaani.redlinegarage.core.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
@@ -23,7 +24,7 @@ import com.zenaani.redlinegarage.core.components.performance.PerfColors
 import com.zenaani.redlinegarage.ui.theme.BodoniModa
 
 @Composable
-fun AccessoryCard(modifier: Modifier = Modifier, name: String, price: String) {
+fun AccessoryCard(modifier: Modifier = Modifier, name: String, price: String, onClick: () -> Unit) {
 
     Card(
         modifier = modifier
@@ -35,6 +36,7 @@ fun AccessoryCard(modifier: Modifier = Modifier, name: String, price: String) {
             ),
         colors = CardDefaults.cardColors(containerColor = PerfColors.Card),
         shape = RoundedCornerShape(8.dp),
+        onClick = onClick
 
         ) {
         Column() {

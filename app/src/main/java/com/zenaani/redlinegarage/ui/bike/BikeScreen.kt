@@ -68,7 +68,7 @@ import com.zenaani.redlinegarage.ui.theme.BodoniModa
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BikeScreen(viewModel: BikeViewModel = hiltViewModel()) {
+fun BikeScreen(viewModel: BikeViewModel = hiltViewModel(), onAccessoryClick: (Int) -> Unit) {
     Scaffold(
         topBar = {
         },
@@ -434,7 +434,11 @@ fun BikeScreen(viewModel: BikeViewModel = hiltViewModel()) {
 
                                     ContentState.Idle -> {}
                                     ContentState.Loading -> {
-                                        CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
+                                        CircularProgressIndicator(
+                                            modifier = Modifier.align(
+                                                Alignment.CenterHorizontally
+                                            )
+                                        )
                                     }
 
                                     ContentState.Success -> {
@@ -484,7 +488,10 @@ fun BikeScreen(viewModel: BikeViewModel = hiltViewModel()) {
                                                 verticalArrangement = Arrangement.spacedBy(12.dp)
                                             ) {
                                                 items(uiState.accessories?.content ?: emptyList()) {
-                                                    AccessoryCard(name = it.name ?: "-", price = it.price ?: "")
+                                                    AccessoryCard(
+                                                        name = it.name ?: "-",
+                                                        price = it.price ?: "",
+                                                        onClick = { onAccessoryClick(it.id.toInt()) })
                                                 }
                                             }
                                         }
